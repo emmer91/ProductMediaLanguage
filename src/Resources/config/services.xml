@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="ProductMediaLanguage\Content\Product\Aggregate\ProductMedia\ProductMediaLanguage\ProductMediaLanguageDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+
+        <service id="ProductMediaLanguage\Content\Product\Aggregate\ProductMedia\ProductMediaDefinitionExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+
+        <service id="ProductMediaLanguage\Core\System\Language\LanguageDefinitionExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+
+        <service id="ProductMediaLanguage\Content\Product\ProductDefinitionExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+
+        <service id="ProductMediaLanguage\Subscriber\ProductMediaLanguageSubscriber">
+            <argument type="service" id="Shopware\Core\Content\Media\Subscriber\MediaLoadedSubscriber"/>
+            <argument type="service" id="Shopware\Core\Content\Media\MediaDefinition"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+    </services>
+</container>

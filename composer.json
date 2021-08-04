@@ -1,0 +1,18 @@
+{
+  "name": "swag/product-media-language",
+  "description": "Product Media Language",
+  "type": "shopware-platform-plugin",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "ProductMediaLanguage\\": "src/"
+    }
+  },
+  "extra": {
+    "shopware-plugin-class": "ProductMediaLanguage\\ProductMediaLanguage",
+    "label": {
+      "de-DE": "Product Media Language",
+      "en-GB": "Product Media Language"
+    }
+  }
+}
