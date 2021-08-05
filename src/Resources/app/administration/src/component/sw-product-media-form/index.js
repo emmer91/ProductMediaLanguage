@@ -1,47 +1,17 @@
 // TODO: cover handling in admin
-
+import template from './sw-product-media-form.html.twig';
 const {Component} = Shopware;
 const {Criteria} = Shopware.Data;
 Component.override('sw-product-media-form', {
+    template,
     computed: {
-        product() {
-            const state = Shopware.State.get('swProductDetail');
-
-            if (this.isInherited) {
-                return state.parentProduct;
-            }
-
-            console.log('state.product:', state.product);
-
-            return state.product;
-        },
-
-        mediaItems() {
-            const mediaItems = this.productMedia.slice();
-            const placeholderCount = this.getPlaceholderCount(this.columnCount);
-
-            if (placeholderCount === 0) {
-                return mediaItems;
-            }
-
-            for (let i = 0; i < placeholderCount; i += 1) {
-                mediaItems.push(this.createPlaceholderMedia(mediaItems));
-            }
-            return mediaItems;
-        },
-
         cover() {
             if (!this.product) {
                 return null;
             }
-            const coverId = this.product.cover ? this.product.cover.mediaId : this.product.coverId;
 
             return this.product.media.find(media => {
-                    if (media.extensions.productMediaLanguage) {
-                        return media.extensions.productMediaLanguage.cover === 1;
-                    } else {
-                        return false;
-                    }
+                    return media.extensions.productMediaLanguage ? media.extensions.productMediaLanguage.cover : false;
                 }
             );
         },
@@ -67,11 +37,8 @@ Component.override('sw-product-media-form', {
 
         currentCoverID() {
             const coverMediaItem = this.productMedia.find(coverMedium => {
-                if (coverMedium.extensions.productMediaLanguage) {
-                    return coverMedium.extensions.productMediaLanguage.cover === 1;
-                } else {
-                    return false;
-                }
+                return coverMedium.extensions.productMediaLanguage ? coverMedium.extensions.productMediaLanguage.cover : false;
+
             });
 
             return coverMediaItem.id;
@@ -84,22 +51,30 @@ Component.override('sw-product-media-form', {
 
             const productMedia = this.$super('buildProductMedia', mediaId);
 
-            if (!productMedia.extensionss.productMediaLanguage.id) {
-                const productMediaLanguage = this.productMediaLanguageRepository.create(Shopware.context, mediaId);
-                productMediaLanguage.productMediaId = mediaId;
+            if (!productMedia.extensions.productMediaLanguage.id) {
+                const productMediaLanguage = this.productMediaLanguageRepository.create(Shopware.context, productMedia.id);
+                productMediaLanguage.productMediaId = productMedia.id;
                 productMediaLanguage.languageId = Shopware.State.get('context').api.languageId;
-                productMedia.extensionss.productMediaLanguage = productMediaLanguage;
-            }
+                productMediaLanguage.cover = false;
 
-            // productMedia.productMediaLanguage = {
-            //     id: mediaId,
-            //     productMediaId: mediaId,
-            //     languageId: Shopware.State.get('context').api.languageId
-            // };
+                productMedia.extensions.productMediaLanguage = productMediaLanguage;
+            }
 
             this.isLoading = false;
 
             return productMedia;
+        },
+
+        createPlaceholderMedia(mediaItems) {
+            const placeholder = this.$super('createPlaceholderMedia', mediaItems);
+
+            placeholder.extensions = {
+                productMediaLanguage: {
+                    cover: mediaItems.length === 0
+                }
+            };
+
+            return placeholder;
         },
 
         // successfulUpload({ targetId }) {
@@ -115,18 +90,14 @@ Component.override('sw-product-media-form', {
         createMediaAssociation(targetId) {
             const productMedia = this.$super('createMediaAssociation', targetId);
 
-            if (!productMedia.extensionss.productMediaLanguage.id) {
-                const productMediaLanguage = this.productMediaLanguageRepository.create(Shopware.context, mediaId);
-                productMediaLanguage.productMediaId = mediaId;
+            if (!productMedia.extensions.productMediaLanguage || !productMedia.extensions.productMediaLanguage.id) {
+                const productMediaLanguage = this.productMediaLanguageRepository.create(Shopware.context, productMedia.id);
+                productMediaLanguage.productMediaId = targetId;
                 productMediaLanguage.languageId = Shopware.State.get('context').api.languageId;
+                productMediaLanguage.cover = false;
+
                 productMedia.extensions.productMediaLanguage = productMediaLanguage;
             }
-
-            // productMedia.extensions.productMediaLanguage = {
-            //     id: targetId,
-            //     productMediaId: targetId,
-            //     languageId: Shopware.State.get('context').api.languageId
-            // };
 
             return productMedia;
         },
@@ -144,40 +115,41 @@ Component.override('sw-product-media-form', {
         //     this.product.isLoading = false;
         // },
 
-        // removeCover() {
-        //     this.product.cover = null;
-        //     this.product.coverId = null;
-        // },
+        removeCover() {
+            this.$super('removeCover');
+
+            this.product.media.forEach((productMediaElement) => {
+                if (productMediaElement.extensions.productMediaLanguage) {
+                    productMediaElement.extensions.productMediaLanguage.cover = false;
+                }
+            })
+        },
 
         isCover(productMedia) {
-            if (productMedia.extensions.productMediaLanguage) {
-                return productMedia.extensions.productMediaLanguage.cover === 1;
-            }
-
-            return false;
-
-            // const coverId = this.product.cover ? this.product.cover.id : this.product.coverId;
-            //
-            // if (this.product.media.length === 0 || productMedia.isPlaceholder) {
-            //     return false;
-            // }
-            //
-            // return productMedia.id === coverId;
+            return productMedia.extensions.productMediaLanguage ? productMedia.extensions.productMediaLanguage.cover : false;
         },
 
         removeFile(productMedia) {
-            this.$super('productMedia', productMedia);
+            this.$super('removeFile', productMedia);
 
-            if(productMedia.extensions.productMediaLanguage && productMedia.extensions.productMediaLanguage.cover === 1) {
-                this.product.media.first().extensions.productMediaLanguage.cover = 1;
+            if(productMedia.extensions.productMediaLanguage ? productMedia.extensions.productMediaLanguage.cover : false) {
+                if (this.product.media.first()) {
+                    this.product.media.first().extensions.productMediaLanguage.cover = true;
+                }
             }
         },
 
         markMediaAsCover(productMedia) {
-            this.$super('productMedia', productMedia);
+            this.$super('markMediaAsCover', productMedia);
+
+            this.product.media.forEach((productMediaElement) => {
+                if (productMediaElement.extensions.productMediaLanguage) {
+                    productMediaElement.extensions.productMediaLanguage.cover = false;
+                }
+            })
 
             if (productMedia.extensions.productMediaLanguage) {
-                productMedia.extensions.productMediaLanguage.cover = 1;
+                productMedia.extensions.productMediaLanguage.cover = true;
             }
         },
 
@@ -185,8 +157,10 @@ Component.override('sw-product-media-form', {
             this.$super('onDropMedia', dragData)
 
             const productMedia = this.product.media.find((productMedia) => productMedia.mediaId === dragData.id);
-            if (productMedia.extensions.productMediaLanguage) {
-                productMedia.extensions.productMediaLanguage.cover = 1;
+            if (productMedia.extensions.productMediaLanguage
+                && productMedia.extensions.productMediaLanguage.cover !== true
+                && this.product.media.length === 1) {
+                productMedia.extensions.productMediaLanguage.cover = true;
             }
         },
     },
