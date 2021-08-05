@@ -18,8 +18,7 @@ class ProductMediaDefinitionExtension extends EntityExtension
                 'productMediaLanguage',
                 'id',
                 'product_media_id',
-                ProductMediaLanguageDefinition::class,
-                false
+                ProductMediaLanguageDefinition::class
         ))->addFlags(new ApiAware()));
     }
 

@@ -20,7 +20,7 @@ class Migration1626975837 extends MigrationStep
                 `language_id` BINARY(16) NOT NULL,
                 `product_media_id` BINARY(16) NOT NULL,
                 `product_media_version_id` BINARY(16) NOT NULL,
-                `cover` TINYINT(1) NOT NULL DEFAULT 0,
+                `cover` TINYINT(1) NULL DEFAULT 0,
                 `custom_fields` JSON NULL,
                 `created_at` DATETIME(3) NOT NULL,
                 `updated_at` DATETIME(3) NULL,
