@@ -35,6 +35,7 @@ class ProductMediaLanguageDefinition extends EntityDefinition
     {
         return ProductMediaLanguageEntity::class;
     }
+
     public function since(): ?string
     {
         return '6.4.0.0';
@@ -52,7 +53,7 @@ class ProductMediaLanguageDefinition extends EntityDefinition
             (new FkField('product_media_id', 'productMediaId', ProductMediaDefinition::class))->addFlags(new ApiAware(), new Required()),
             (new ReferenceVersionField(ProductMediaDefinition::class))->addFlags(new ApiAware(), new Required()),
             (new FkField('language_id', 'languageId', LanguageDefinition::class))->addFlags(new ApiAware(), new Required()),
-            (new BoolField('cover', 'cover'))->addFlags(new ApiAware()),
+            (new BoolField('cover', 'cover'))->addFlags(new ApiAware(), new Required()),
             (new CustomFields())->addFlags(new ApiAware()),
             (new ManyToOneAssociationField('language', 'language_id', LanguageDefinition::class, 'id', false))->addFlags(new ApiAware()),
             (new OnetoOneAssociationField('productMedia', 'product_media_id', 'id', ProductMediaDefinition::class, false))->addFlags(new ApiAware()),

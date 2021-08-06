@@ -6,6 +6,7 @@ use ProductMediaLanguage\Content\Product\Aggregate\ProductMedia\ProductMediaLang
 use Shopware\Core\Content\Product\Aggregate\ProductMedia\ProductMediaDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
@@ -19,7 +20,7 @@ class ProductMediaDefinitionExtension extends EntityExtension
                 'id',
                 'product_media_id',
                 ProductMediaLanguageDefinition::class
-        ))->addFlags(new ApiAware()));
+        ))->addFlags(new ApiAware(), new Required()));
     }
 
     public function getDefinitionClass(): string

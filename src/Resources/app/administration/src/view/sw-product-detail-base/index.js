@@ -1,5 +1,3 @@
-// TODO: check upload action to assign media to product (missing language)
-
 const { Component, Context, Utils, State } = Shopware;
 const { isEmpty } = Utils.types;
 
@@ -23,8 +21,10 @@ Component.override('sw-product-detail-base', {
                 id: media.id
             };
 
-            const productMediaLanguage = this.productMediaRepository.create(Context.api, media.id);
-            productMediaLanguage.id = media.id;
+            const productMediaLanguageId = Utils.createId();
+
+            const productMediaLanguage = this.productMediaLanguageRepository.create(Context.api, productMediaLanguageId);
+            productMediaLanguage.id = productMediaLanguageId;
             productMediaLanguage.productMediaId = newMedia.id;
             productMediaLanguage.languageId = State.get('context').api.languageId;
             productMediaLanguage.cover = false;

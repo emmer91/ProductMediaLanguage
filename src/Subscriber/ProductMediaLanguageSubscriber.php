@@ -44,7 +44,7 @@ class ProductMediaLanguageSubscriber implements EventSubscriberInterface
         $products = $event->getEntities();
 
         foreach ($products as $product) {
-            $coverExtension = $product->getExtension('productMediaCoverAssociation');
+            $coverExtension = $product->getExtension('coverAssociation');
 
             if (!$coverExtension || $coverExtension->count() < 1) {
                 continue;
@@ -93,9 +93,9 @@ class ProductMediaLanguageSubscriber implements EventSubscriberInterface
     private function modifyCriteria(Criteria $criteria, string $languageId): void
     {
         $criteria->addAssociation('media.productMediaLanguage');
-        $criteria->addAssociation('productMediaCoverAssociation.productMediaLanguage');
-        $criteria->addAssociation('productMediaCoverAssociation.media');
-        $coverMediaLanguageAssociation = $criteria->getAssociation('productMediaCoverAssociation');
+        $criteria->addAssociation('coverAssociation.productMediaLanguage');
+        $criteria->addAssociation('coverAssociation.media');
+        $coverMediaLanguageAssociation = $criteria->getAssociation('coverAssociation');
         $coverMediaLanguageAssociation->addFilter(
             new MultiFilter(MultiFilter::CONNECTION_AND, [
                 new EqualsFilter('productMediaLanguage.languageId', $languageId),

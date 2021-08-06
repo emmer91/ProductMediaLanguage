@@ -15,7 +15,7 @@ class ProductMediaLanguageEntity extends Entity
     protected string $languageId = Defaults::LANGUAGE_SYSTEM;
     protected ?string $productMediaId = '';
     protected string $productMediaVersionId = Defaults::LIVE_VERSION;
-    protected ?bool $cover;
+    protected bool $cover;
     protected ?array $customFields;
     protected ?ProductMediaEntity $productMedia;
     protected ?LanguageEntity $language;
@@ -50,12 +50,12 @@ class ProductMediaLanguageEntity extends Entity
         $this->productMediaVersionId = $productMediaVersionId;
     }
 
-    public function isCover(): ?bool
+    public function isCover(): bool
     {
         return $this->cover;
     }
 
-    public function setCover(?bool $cover): void
+    public function setCover(bool $cover): void
     {
         $this->cover = $cover;
     }

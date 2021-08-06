@@ -15,7 +15,7 @@ class ProductDefinitionExtension extends EntityExtension
     {
         $collection->add(
             (new OneToManyAssociationField(
-                'productMediaCoverAssociation',
+                'coverAssociation',
                 ProductMediaDefinition::class,
                 'product_id'
         ))->addFlags(new ApiAware()));
