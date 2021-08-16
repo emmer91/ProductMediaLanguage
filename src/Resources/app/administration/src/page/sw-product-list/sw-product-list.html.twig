@@ -1,0 +1,13 @@
+{% block sw_product_list_grid_columns_name_preview %}
+    <template #preview-name="{ item }">
+            <sw-media-preview-v2 v-if="item.media.first()
+            && item.media.first().extensions.productMediaLanguage
+            && item.media.first().extensions.productMediaLanguage.cover === true"
+                :source="item.media.first().media"
+            />
+
+            <sw-media-preview-v2 v-else
+                :source="null"
+            />
+    </template>
+{% endblock %}
