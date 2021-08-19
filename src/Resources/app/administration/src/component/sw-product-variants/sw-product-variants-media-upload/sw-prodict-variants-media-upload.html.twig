@@ -1,0 +1,48 @@
+{% block sw_product_variants_media_upload_cover_preview %}
+    <div
+        v-if="cover"
+        class="sw-product-variants-media-upload__preview-cover"
+    >
+        {% block sw_product_variants_media_upload_cover_image %}
+            <sw-media-preview-v2
+                class="sw-product-variants-media-upload__cover-image"
+                :source="cover.mediaId"
+            />
+        {% endblock %}
+    </div>
+    <div
+        v-else-if="source.media.length > 0"
+        class="sw-product-variants-media-upload__preview-cover"
+    >
+        {% block sw_product_variants_media_upload_cover_image_empty %}
+            <sw-media-preview-v2
+                class="sw-product-variants-media-upload__cover-image"
+                :source="null"
+            />
+        {% endblock %}
+    </div>
+{% endblock %}
+
+
+{% block sw_product_media_form_cover_preview %}
+    <div
+        v-if="cover"
+        class="sw-product-media-form__preview-cover"
+    >
+        <div class="preview-cover">
+            {% block sw_product_media_form_cover_image %}
+                <sw-media-preview-v2
+                    class="sw-product-media-form__cover-image"
+                    :source="cover.mediaId"
+                />
+            {% endblock %}
+            <span>{{ $tc('sw-product.mediaForm.coverSubline') }}</span>
+        </div>
+    </div>
+    <div
+        v-else
+        class="sw-product-media-form__cover-image is--placeholder"
+    >
+        {{ $tc('sw-product.mediaForm.coverSubline') }}
+    </div>
+{% endblock %}

@@ -1,7 +1,7 @@
-const { Component, Context, Utils, State } = Shopware;
-const { isEmpty } = Utils.types;
+const { Component, State, Utils, Context } = Shopware;
+const { Criteria } = Shopware.Data;
 
-Component.override('sw-product-detail-base', {
+Component.override('sw-product-variants-overview', {
     computed: {
         productMediaLanguageRepository() {
             return this.repositoryFactory.create('product_media_language');
@@ -9,31 +9,22 @@ Component.override('sw-product-detail-base', {
     },
 
     methods: {
-        addMedia(media) {
-            if (this.isExistingMedia(media)) {
-                return Promise.reject(media);
-            }
+        buildSearchQuery(criteria) {
+            const searchCriteria = this.$super('buildSearchQuery', criteria);
 
-            const newMedia = this.productMediaRepository.create(Context.api);
-            newMedia.mediaId = media.id;
-            newMedia.media = {
-                url: media.url,
-                id: media.id
-            };
+            searchCriteria.addAssociation('media.productMediaLanguage');
+            searchCriteria.getAssociation('media').addFilter(Criteria.equals('productMediaLanguage.languageId', State.get('context').api.languageId ));
 
-            this.addProductMediaLanguageToProductMedia(newMedia);
-
-            if (isEmpty(this.product.media)) {
-                this.setMediaAsCover(newMedia);
-            }
-
-            this.product.media.add(newMedia);
-
-            return Promise.resolve();
+            return searchCriteria
         },
 
-        mediaRemoveInheritanceFunction(newValue) {
-            newValue.forEach(({ id, mediaId, position, extensions }) => {
+        onMediaInheritanceRemove(variant, isInlineEdit) {
+            if (!isInlineEdit) {
+                return;
+            }
+
+            variant.forceMediaInheritanceRemove = true;
+            this.product.media.forEach(({ id, mediaId, position, extensions }) => {
                 const media = this.productMediaRepository.create(Context.api);
                 Object.assign(media, { mediaId, position, productId: this.product.id });
 
@@ -41,16 +32,12 @@ Component.override('sw-product-detail-base', {
 
                 media.extensions.productMediaLanguage.cover = false;
                 if (extensions.productMediaLanguage.cover) {
-                    this.product.coverId = media.id;
+                    variant.coverId = media.id;
                     media.extensions.productMediaLanguage.cover = true;
                 }
 
-                this.product.media.push(media);
+                variant.media.push(media);
             });
-
-            this.$refs.productMediaInheritance.forceInheritanceRemove = true;
-
-            return this.product.media;
         },
 
         addProductMediaLanguageToProductMedia(productMedia) {
@@ -68,5 +55,5 @@ Component.override('sw-product-detail-base', {
 
             productMedia.extensions.productMediaLanguage = productMediaLanguage;
         },
-    }
+    },
 });
