@@ -1,5 +1,6 @@
 {
   "name": "swag/product-media-language",
+  "version": "1.0.0",
   "description": "Product Media Language",
   "type": "shopware-platform-plugin",
   "license": "MIT",
